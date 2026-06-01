@@ -1,0 +1,89 @@
+# 游戏窗口标题（用于定位窗口）
+[window]
+title = "洛克王国：世界"
+
+# 定位参数（带遮罩的归一化互相关 ZNCC 模板匹配 — 全局/跟踪共用基础参数）
+[matching]
+# 小地图有效外圆半径比例（<=1，去掉圆形黑边）
+inner_ratio = 0.92
+# 排除中心区域比例（去掉正中央随朝向旋转的玩家箭头，建议 0.18~0.28）
+center_exclude_ratio = 0.22
+# 尺度猜测（大地图像素 / 小地图像素）。全局定位以此为中心搜索并最终锁定。
+# 不确定时可用 `cargo run --release -- selftest` 自检并据输出微调此值。
+scale = 1.45
+# 全局定位时围绕 scale 的相对搜索范围（±比例，0 = 固定尺度不搜索）
+scale_search = 0.18
+# 接受阈值：ZNCC 分数低于此值判定为「没匹配上 / 跟丢」（0~1）
+min_score = 0.45
+# 输出坐标 EMA 平滑系数（0~1）：新值权重，越小越平滑、越跟手则调大
+ema_alpha = 0.5
+
+# 全局定位参数（首次 / 重定位 / 连续跟丢自愈时使用）
+[locating]
+# 全局搜索用粗图宽度（像素）：越大越准但越慢
+coarse_width = 640
+# 全局搜索测试的候选尺度数量（在 scale 搜索范围内均匀取样）
+scale_steps = 13
+# 全分辨率精修时的匹配模板直径（像素）：越大越精细越慢
+refine_diam = 110
+# 未锁定位置时的全局定位轮询间隔（毫秒）
+interval_ms = 700
+
+# 跟踪模式参数（已有位置时使用）
+[tracking]
+# 围绕上一帧坐标的搜索半径（世界像素）：相邻两帧位移上限
+search_radius = 150.0
+# 粗级匹配模板直径（像素）：大窗口快速锁定大致位置
+coarse_diam = 56
+# 精级匹配模板直径（像素）：小窗口精修到亚像素
+fine_diam = 120
+# 跟踪轮询间隔（毫秒）
+interval_ms = 40
+# 连续多少帧分数过低后判定跟丢、自动转入全局重定位
+lost_patience = 4
+
+# 捕获参数
+[capture]
+# 大地图图片路径（相对 exe 工作目录）
+big_map_path = "res/map-use.jpg"
+
+# 叠加窗口显示
+[display]
+# 显示用大地图最大边长（超出则缩小，规避 GPU 纹理上限；大多数 GPU 最低保证 2048）
+max_texture = 2048
+# 地图显示缩放（>1 放大）
+view_zoom = 1.0
+
+# 路线绘制
+[route]
+# 路线文件目录（读取目录下所有 .json）
+dir = "res/routes"
+# 线宽
+line_width = 1.5
+# 点位半径
+point_radius = 3.0
+# 距离点位多少（大地图像素）算到达
+reach_radius = 10.0
+# 路线颜色 RGBA（0~255）
+color = [220, 50, 50, 255]
+# 已走过部分的不透明度系数（0~1）
+passed_opacity = 0.12
+
+# 导航箭头
+[nav]
+# 转向/箭头平滑时间常数（毫秒）。越大越平滑、跟手越慢；0 表示不平滑
+turn_smooth_ms = 120.0
+
+# 物资点位
+[resource]
+# 物资文件（json），包含位置和类型（mineral/flower/star）
+file = "res/resources.json"
+
+# 调试
+[debug]
+# 是否在叠加窗口显示调试信息（小地图截图、区域坐标等）
+enabled = true
+# 是否把每次截取的小地图保存到磁盘
+save_minimap = true
+save_path = "debug_minimap.png"
+
